@@ -15,10 +15,24 @@ class Twitter {
 		$this->_curlHandler = null;
 	}
 	
-	public function getListMemberShips($id, $data = null, $format = null) {
-		$f = (is_null($format)) ? $this->_defaultFormat : $format;
-		$url = urlencode($id)."/lists/memberships." . $f;
-		$response = $this->doCall($url, $cursor);
+	public function usersShow($id) {
+		$f = $this->_assignFormat($format);
+		$url = "users/show/" . urlencode($id). "." . $f;
+		$response = $this->doCall($url, $data);
+		return $response;
+	}
+	
+	public function getListMemberships($id, $data = null, $format = null) {
+		$f = $this->_assignFormat($format);
+		$url = urlencode($id)."lists/memberships." . $f;
+		$response = $this->doCall($url, $data);
+		return $response;
+	}
+	
+	public function rateLimitStatus() {
+		$f = $this->_assignFormat($format);
+		$url = "account/rate_limit_status." . $f;
+		$response = $this->doCall($url, $data);
 		return $response;
 	}
 
@@ -32,12 +46,14 @@ class Twitter {
 	
 	private function doCall($url, $data) {
 		$this->login();
-		$url = self::TWITTER_API_URL . "$url?".$data;
+		$data .= (is_null($data)) ? "" : "?";
+		$url = self::TWITTER_API_URL . "$url".$data;
 		curl_setopt($this->_curlHandler, CURLOPT_URL, $url);
 		$response = curl_exec($this->_curlHandler);
 		$headers = curl_getinfo($this->_curlHandler);
 		$errorNumber = curl_errno($this->_curlHandler);
 		$errorMessage = curl_error($this->_curlHandler);
+		echo "$url\n";
 		$this->_curlClose();
 		return $response;
 	}
@@ -53,5 +69,9 @@ class Twitter {
 	
 	private function _getcUrlUserpwd() {
 		return $this->_user . ":" . $this->_password;
+	}
+	
+	private function _assignFormat($format) {
+		return (is_null($format)) ? $this->_defaultFormat : $format;
 	}
 }

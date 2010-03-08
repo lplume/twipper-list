@@ -19,6 +19,7 @@ echo "Fetching page = ";
 for($k = 0; $k < $howMany; $k++) {
 	echo ($k+1)." ";
 	$subscriber = $base_url ."$user/lists/memberships.xml?cursor=$next";
+	echo "$subscriber\n";
 
 	$ch = curl_init($subscriber);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

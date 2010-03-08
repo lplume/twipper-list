@@ -1,17 +1,21 @@
 <?php
 include_once "../myTweet/Twitter.class.php";
 
-$t = new Twitter("user", "pass");
+$t = new Twitter("xxx", "xxx");
 
 $xml = null;
 $sanitized = array();
-echo "Fetching page : ";
+//echo "Fetching page : ";
+
+$rls = $t->rateLimitStatus();
+
+echo $rls."\n\n";
 
 for($c = 0; $c < $argv[1]; $c++) {
-	echo " *".($c+1);
+	//echo " *".($c+1);
 	if($xml == null)
 		$cursor = "-1";
-	$xml = $t->getListMemberShips("BlackBerry", "curosor=$cursor");
+	$xml = $t->getListMemberships("BlackBerry", "cursor=$cursor");
 	$domDoc = DOMDocument::loadXML($xml);
 	$xpath = new DOMXPath($domDoc);
 
@@ -29,7 +33,7 @@ for ($i = 0; $i < $result->length; $i++) {
 	$cursor = $next;
 }
 
-echo "\n***Results***\n";
+//echo "\n***Results***\n";
 
 foreach ($sanitized as $list => $subs)
 echo "$list :: $subs\n";
