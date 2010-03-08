@@ -14,6 +14,7 @@ class myTweetLab extends Twitter {
 
 	public function twitterListDensity($user, $howMuch) {
 		$xml = null;
+		$sanitized = array();
 		for($c = 0; $c < $howMuch; $c++) {
 			if($xml == null)
 				$cursor = "-1";
@@ -25,7 +26,6 @@ class myTweetLab extends Twitter {
 			$next = "".$xpath->query("//next_cursor")->item(0)->nodeValue;
 			for ($i = 0; $i < $result->length; $i++) {
 				$name = $result->item($i)->getElementsByTagName("name")->item(0)->nodeValue;
-//				$subs = $result->item($i)->getElementsByTagName("member_count")->item(0)->nodeValue;
 				$name = trim(strtolower($name));
 				if(array_key_exists($name, $sanitized))
 					$sanitized["$name"] += 1;
@@ -37,19 +37,20 @@ class myTweetLab extends Twitter {
 		return $sanitized;
 	}
 	
-	public function twitterListDensityHTMLCloud($twitterListDensityArray, $minFontSize = 12, $maxFontSize = 24) {
+	public function twitterListDensityHTMLCloud($twitterListDensityArray, $skip = 1, $minFontSize = 12, $maxFontSize = 24) {
 		$min = $max = $twitterListDensityArray[0];
 		$size = $minFontSize;
-		$tmpArray = shuffle($twitterListDensityArray);
-		$htmlCloud = "";
-		foreach($tmpArray as $list) {
+		$htmlCloudStr = "";
+		foreach($twitterListDensityArray as $list) {
 			$min = $list <= $min ? $list : $min;
 			$max = $list >= $max ? $list : $max;
 		}
-		foreach($tmpArray as $key => $value) {
-			$size = ($tmpDim = ceil( $maxFontSize * ($value - $min) / ($max - $min)) < $minFontSize) ? $minFontSize : $tmpMin;
-			$htmlCloud .= "<span style=\"font-size:$size\">$key</span>";
+		foreach($twitterListDensityArray as $key => $value) {
+			if($value <= $skip) continue;
+			$tmpDim = ceil( $maxFontSize * ($value - $min) / ($max - $min));
+			$size = $tmpDim < $minFontSize ? $minFontSize : $tmpDim;
+			$htmlCloudStr .= "<span style=\"font-size:".$size."px\">$key</span> ";
 		}
-		return $htmlCloud;
+		return $htmlCloudStr;
 	}
 }

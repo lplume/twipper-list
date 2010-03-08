@@ -24,7 +24,7 @@ class Twitter {
 	
 	public function getListMemberships($id, $data = null, $format = null) {
 		$f = $this->_assignFormat($format);
-		$url = urlencode($id)."lists/memberships." . $f;
+		$url = urlencode($id)."/lists/memberships." . $f;
 		$response = $this->doCall($url, $data);
 		return $response;
 	}
@@ -46,14 +46,13 @@ class Twitter {
 	
 	private function doCall($url, $data) {
 		$this->login();
-		$data .= (is_null($data)) ? "" : "?";
+		$data = (is_null($data)) ? "" : "?$data";
 		$url = self::TWITTER_API_URL . "$url".$data;
 		curl_setopt($this->_curlHandler, CURLOPT_URL, $url);
 		$response = curl_exec($this->_curlHandler);
 		$headers = curl_getinfo($this->_curlHandler);
 		$errorNumber = curl_errno($this->_curlHandler);
 		$errorMessage = curl_error($this->_curlHandler);
-		echo "$url\n";
 		$this->_curlClose();
 		return $response;
 	}
